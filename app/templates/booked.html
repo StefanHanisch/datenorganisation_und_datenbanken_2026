@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}Buchung bestätigt{% endblock %}
+{% block content %}<section class="container content-section"><div class="confirmation"><span class="confirmation-icon">✓</span><div class="eyebrow">ERFOLGREICH</div><h1>Deine Reservierung ist bestätigt.</h1><p>Buchungsnummer <strong>#{{ number }}</strong> · {{email}}</p><div class="cta-row"><a class="button primary" href="/bookings?email={{ email }}">Reservierung anzeigen →</a><a class="button secondary" href="/">Neue Hotelsuche</a></div></div></section>{% endblock %}

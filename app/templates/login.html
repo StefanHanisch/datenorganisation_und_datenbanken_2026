@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Zugang{% endblock %}
+{% block content %}
+<section class="login-wrap">
+  <div class="login-card">
+    <div class="eyebrow">HOTELDB · LEHRPROJEKT</div>
+    <h1>Willkommen bei GlobalStay.</h1>
+    <p>Das Hotelportal und das SQL-Labor nutzen denselben Demo-Datenbestand. Melde dich mit dem Kurscode an.</p>
+    {% if error %}<div class="notice error">{{ error }}</div>{% endif %}
+    <form action="/login" method="post" class="stack">
+      <label>Zugangscode<input name="code" type="password" required autocomplete="off" placeholder="Kurscode" autofocus></label>
+      <button class="button primary" type="submit">System öffnen →</button>
+    </form>
+    <p class="hint">Keine echten Kundendaten eingeben.</p>
+  </div>
+</section>
+{% endblock %}

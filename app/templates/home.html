@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Hotels entdecken{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div><div class="eyebrow light">GLOBALSTAY HOTELS · WELTWEIT</div><h1>Einchecken.<br><em>Aufatmen.</em></h1>
+      <p>Finde ein Hotel, das zu deiner Reise passt – von der City-Auszeit bis zum nächsten Abenteuer.</p>
+      <div class="hero-features"><span>✓ Flexible Zimmerkategorien</span><span>✓ Direkte Buchung</span></div>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="building b1"></div><div class="building b2"></div><div class="building b3"></div><div class="art-sun"></div></div>
+  </div>
+</section>
+<section class="container search-panel-wrap">
+  <form class="search-panel" action="/search" method="get">
+    <div class="search-field"><label for="city-search">Reiseziel</label>
+      <input id="city-search" name="city" placeholder="Stadt eingeben, z. B. Berlin" required autocomplete="off" list="city-suggestions">
+      <datalist id="city-suggestions"></datalist>
+    </div>
+    <div class="search-field"><label>Check-in</label><input name="checkin" type="date" value="{{ today }}" required></div>
+    <div class="search-field"><label>Check-out</label><input name="checkout" type="date" value="{{ later }}" required></div>
+    <button class="button primary search-submit">Hotels suchen →</button>
+  </form>
+</section>
+<section class="container content-section">
+  <div class="section-top"><div><div class="eyebrow">ENTDECKEN</div><h2>Große Städte. Neue Erlebnisse.</h2></div><a href="/bookings" class="plain-link">Bestehende Buchung finden →</a></div>
+  <div class="destination-grid">
+    <a class="destination-card berlin" href="/search?city=Berlin&checkin={{today}}&checkout={{later}}"><div class="destination-caption">DEUTSCHLAND <strong>Berlin</strong></div></a>
+    <a class="destination-card london" href="/search?city=London&checkin={{today}}&checkout={{later}}"><div class="destination-caption">VEREINIGTES KÖNIGREICH <strong>London</strong></div></a>
+    <a class="destination-card paris" href="/search?city=Paris&checkin={{today}}&checkout={{later}}"><div class="destination-caption">FRANKREICH <strong>Paris</strong></div></a>
+  </div>
+  <p class="hint">Mission 02: Die Suche funktioniert. Automatische Städtevorschläge fehlen noch absichtlich.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hoteldb
+      POSTGRES_USER: hotel_owner
+      POSTGRES_PASSWORD: ${POSTGRES_OWNER_PASSWORD:-owner_local_change}
+      HOTEL_APP_PASSWORD: ${HOTEL_APP_PASSWORD:-app_local_change}
+      HOTEL_STUDENT_PASSWORD: ${HOTEL_STUDENT_PASSWORD:-student_local_change}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hotel_owner -d hoteldb"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://hotel_app:${HOTEL_APP_PASSWORD:-app_local_change}@db:5432/hoteldb
+      STUDENT_DATABASE_URL: postgresql://hotel_student:${HOTEL_STUDENT_PASSWORD:-student_local_change}@db:5432/hoteldb
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8000:8000"
+volumes:
+  postgres_data:

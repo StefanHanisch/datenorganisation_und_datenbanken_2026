@@ -1,0 +1,10 @@
+-- MISSION-01: PERFORMANCE (DO NOT RUN UNTIL THE STUDENTS CHOOSE AN INDEX)
+-- TODO(MISSION-01): The agent should write ONE appropriate CREATE INDEX statement.
+-- Requirements:
+--   * Index the guests.email equality lookup, not unrelated columns.
+--   * Confirm index did not already exist.
+--   * Use CONCURRENTLY if the database remains in active use.
+--   * Do NOT wrap CREATE INDEX CONCURRENTLY in BEGIN/COMMIT.
+--   * Obtain explicit teacher approval before executing against Azure.
+--   * Re-run EXPLAIN (ANALYZE, BUFFERS) and compare actual results.
+-- No SQL statement here by design. This mission is intentionally locked.

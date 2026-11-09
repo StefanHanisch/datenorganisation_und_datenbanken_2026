@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Meine Buchungen{% endblock %}
+{% block content %}
+<section class="container content-section narrow">
+  <div class="breadcrumb"><a href="/">Startseite</a> / Meine Buchungen</div><div class="eyebrow">KUNDENSERVICE</div>
+  <h1>Reservierung finden</h1><p>Suche nach der E-Mail-Adresse, die bei der Buchung verwendet wurde.</p>
+  <form action="/bookings" method="get" class="lookup-form"><input type="email" name="email" value="{{email}}" placeholder="gast12345@example.test" required><button class="button primary">Suchen →</button></form>
+  {% if email %}
+    <div class="section-top"><h2>Deine Buchungen</h2><span class="count-pill">{{ bookings|length }} Ergebnisse</span></div>
+    {% for b in bookings %}
+      <div class="booking-item"><div><span class="eyebrow">BUCHUNG #{{b.id}}</span><h3>{{ b.hotel }}</h3><p>{{b.city}} · {{b.category}} · {{b.checkin}} bis {{b.checkout}}</p></div>
+        <div class="change-side"><span class="available">{{b.status}}</span>
+          <form class="change-booking" data-reservation-id="{{b.id}}">
+            <label>Neue Anreise<input type="date" name="checkin" value="{{b.checkin}}" required></label>
+            <label>Neue Abreise<input type="date" name="checkout" value="{{b.checkout}}" required></label>
+            <button type="submit" class="button secondary">Aufenthalt ändern →</button>
+            <p class="change-feedback" role="status" aria-live="polite"></p>
+          </form></div></div>
+    {% else %}<div class="empty-state">Keine Buchung unter dieser Adresse gefunden.</div>{% endfor %}
+  {% endif %}
+  <p class="hint">Mission 01: Diese Suche verwendet zunächst bewusst keinen Index auf guests.email.</p>
+</section>
+{% endblock %}

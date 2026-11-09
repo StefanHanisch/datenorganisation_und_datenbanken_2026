@@ -1,0 +1,67 @@
+name: HotelDB Azure Deploy (TEACHER ONLY)
+
+# Manually run AFTER class approval. This still demonstrates CI/CD.
+# To make it automatic later, add a push: branches: [main] trigger.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: classroom
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install and test
+        run: |
+          python -m pip install -e '.[dev]'
+          python -m pytest -q
+          python -m ruff check app scripts tests
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push immutable image
+        id: image
+        env:
+          REGISTRY: ghcr.io
+        run: |
+          set -euo pipefail
+          REPO_LOWER="$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
+          IMAGE="${REGISTRY}/${REPO_LOWER}:${GITHUB_SHA}"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+      - name: Azure OIDC sign-in
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy to existing Container App
+        env:
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          APP_NAME: ${{ vars.AZURE_CONTAINER_APP_NAME }}
+          IMAGE: ${{ steps.image.outputs.image }}
+        run: |
+          set -euo pipefail
+          az extension add --name containerapp --upgrade --yes
+          az containerapp update \
+            --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" --image "$IMAGE"
+      - name: Verify live health endpoint
+        env:
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          APP_NAME: ${{ vars.AZURE_CONTAINER_APP_NAME }}
+        run: |
+          set -euo pipefail
+          FQDN="$(az containerapp show -n "$APP_NAME" -g "$RESOURCE_GROUP" --query properties.configuration.ingress.fqdn -o tsv)"
+          curl --fail --retry 6 --retry-delay 5 --retry-connrefused "https://${FQDN}/health"

@@ -1,0 +1,3 @@
+-- Placeholder for teacher-approved cleanup after Mission 01.
+-- TODO(MISSION-01): agent adds DROP INDEX CONCURRENTLY IF EXISTS <chosen_name>;
+-- Do not execute without approval. Later you can reset your database for a rerun.

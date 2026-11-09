@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Control Center{% endblock %}
+{% block content %}
+<section class="admin-layout" data-role="{{role}}">
+  <aside class="sidebar"><div class="side-heading">GLOBALSTAY / IT</div>
+    <div class="side-label">WORKSPACE</div>
+    <button class="side-button active" data-tab="overview">▦ &nbsp; Übersicht</button>
+    <button class="side-button" data-tab="data">▤ &nbsp; Datenexplorer</button>
+    <button class="side-button" data-tab="sql">⌘ &nbsp; SQL-Labor</button>
+    <button class="side-button" data-tab="actions">＋ &nbsp; Admin-Aktionen</button>
+    <button class="side-button" data-tab="missions">◇ &nbsp; Mission Control</button>
+    <div class="side-bottom"><span class="status-dot"></span> Classroom environment<br><small>SQL-Labor: immer schreibgeschützt</small></div>
+  </aside>
+  <div class="admin-main">
+    <div class="admin-top"><div><div class="eyebrow">DATABASE OPERATIONS</div><h1>Control Center</h1><p>Analysieren. Verstehen. Gemeinsam verbessern.</p></div><span class="badge">{{'TEACHER' if is_teacher else 'READ ONLY'}}</span></div>
+    <section class="panel-section active" id="tab-overview">
+      <div class="metrics" id="stats"><div class="metric"><label>Hotels</label><strong>—</strong></div><div class="metric"><label>Zimmer</label><strong>—</strong></div><div class="metric"><label>Gäste</label><strong>—</strong></div><div class="metric"><label>Reservierungen</label><strong>—</strong></div></div>
+      <div class="panel-card"><div class="card-title">Überblick zum Datenbanksystem</div><p>Alle Zahlen kommen aus PostgreSQL. Die Schätzwerte werden nach dem Seed mit ANALYZE aktualisiert.</p>
+        <p><strong>Stack:</strong> FastAPI · PostgreSQL · Azure Container Apps · GitHub Actions</p>
+        <a class="button secondary" href="#" data-tab-link="sql">SQL-Labor öffnen →</a>
+      </div>
+    </section>
+    <section class="panel-section" id="tab-data"><div class="panel-card"><div class="card-title">Datenexplorer</div><p>Tabellen und Beispieldatensätze. Pro Ansicht höchstens 15 Zeilen.</p>
+      <div class="explorer"><div id="table-buttons" class="table-buttons"></div><div class="table-result"><pre id="table-output">Wähle eine Tabelle aus.</pre></div></div>
+    </div></section>
+    <section class="panel-section" id="tab-sql"><div class="panel-card"><div class="panel-head"><div><div class="card-title">SQL-Labor</div><p>Nur SELECT und WITH … SELECT. Datenbankrolle: hotel_student.</p></div><span class="badge green">READ ONLY</span></div>
+      <label for="sql-input" class="sr-only">SQL-Abfrage</label>
+      <textarea id="sql-input" class="code-area" spellcheck="false">SELECT h.name, COUNT(r.id) AS rooms
+FROM hotels h
+JOIN room_categories c ON c.hotel_id = h.id
+JOIN rooms r ON r.category_id = c.id
+GROUP BY h.id, h.name
+ORDER BY rooms DESC
+LIMIT 10;</textarea>
+      <div class="toolbar"><button id="sql-run" class="button primary">▶ Ausführen</button><button id="sql-plan" class="button secondary">EXPLAIN ANALYZE</button><span id="sql-status" class="hint">Maximal 100 Ergebniszeilen · Timeout 4 Sekunden</span></div>
+      <div id="sql-output" class="sql-output"><div class="empty-state">Abfrage eingeben und ausführen.</div></div>
+    </div></section>
+    <section class="panel-section" id="tab-actions"><div class="panel-card"><div class="card-title">Vorbereitete Admin-Aktionen</div>
+      <p>Dies sind echte POST-Endpunkte. Schreibrechte sind auf Lehrperson und Agent begrenzt.</p>
+      {% if is_teacher %}
+        <div class="form-row"><label>Aktion<select id="admin-action"><option value="cities">Neue Stadt</option><option value="hotels" selected>Neues Hotel</option><option value="room-categories">Neue Zimmerkategorie</option><option value="rooms">Neues Zimmer</option></select></label></div>
+        <form id="admin-action-form" class="stack"><div id="admin-fields"></div><button class="button primary" type="submit">POST ausführen</button></form>
+        <pre id="admin-response" class="response-box">Bereit.</pre>
+      {% else %}<div class="notice">Nur die Lehrperson darf Daten über die Admin-API ändern. Du kannst im SQL-Labor beliebige lesende Abfragen ausführen.</div>{% endif %}
+      <div class="api-note"><code>POST /api/admin/cities</code> · <code>/hotels</code> · <code>/room-categories</code> · <code>/rooms</code></div>
+    </div></section>
+    <section class="panel-section" id="tab-missions">
+      <div class="mission-grid">
+        <div class="mission-card"><div class="eyebrow">MISSION 01 / PERFORMANCE</div><h3>Die Suche ist langsam</h3><p>3 Millionen Gäste. E-Mail-Suche ohne zusätzlichen Index. Messen, diskutieren, gezielt optimieren.</p><span class="mission-tag">TODO(MISSION-01)</span></div>
+        <div class="mission-card"><div class="eyebrow">MISSION 02 / DATA STRUCTURES</div><h3>Autocomplete fehlt</h3><p>Gemeinsam einen Trie auf Papier entwickeln und anschließend live implementieren.</p><span class="mission-tag">TODO(MISSION-02)</span></div>
+        <div class="mission-card"><div class="eyebrow">MISSION 03 / DATA INTEGRITY</div><h3>Aufenthalt verlängern</h3><p>Eine bestehende Kategorie-Buchung datumsbezogen ändern und Verfügbarkeit prüfen.</p><span class="mission-tag">TODO(MISSION-03)</span></div>
+      </div><p class="hint">Auftragskarten und Agentenprompts liegen im Repository unter docs/ und .claude/commands/. Kein automatisches Freischalten.</p>
+    </section>
+  </div>
+</section>
+<script defer src="/static/admin.js"></script>
+{% endblock %}

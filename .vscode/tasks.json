@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "HotelDB: Web starten",
+      "detail": "uvicorn mit Auto-Reload auf http://localhost:8000 (im Dev Container; DB läuft bereits)",
+      "type": "shell",
+      "command": "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "uvicorn",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Will watch for changes|Started server process",
+          "endsPattern": "Application startup complete"
+        }
+      },
+      "presentation": { "panel": "dedicated", "reveal": "always" },
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "HotelDB: Tests",
+      "type": "shell",
+      "command": "python -m pytest -q",
+      "problemMatcher": [],
+      "group": { "kind": "test", "isDefault": true }
+    },
+    {
+      "label": "HotelDB: Demo-Daten laden",
+      "type": "shell",
+      "command": "python scripts/seed.py --profile demo",
+      "problemMatcher": []
+    },
+    {
+      "label": "HotelDB: Index benchmarken",
+      "type": "shell",
+      "command": "python scripts/benchmark_email.py",
+      "problemMatcher": []
+    }
+  ]
+}

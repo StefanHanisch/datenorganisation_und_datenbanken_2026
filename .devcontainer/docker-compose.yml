@@ -1,0 +1,7 @@
+services:
+  web:
+    user: root
+    volumes:
+      # Relative paths resolve against the first compose file (../compose.yaml), i.e. the project root
+      - .:/workspace:cached
+    command: sleep infinity

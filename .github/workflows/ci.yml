@@ -1,0 +1,28 @@
+name: HotelDB CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install
+        run: python -m pip install -e '.[dev]'
+      - name: Syntax check
+        run: python -m compileall -q app scripts
+      - name: Tests (future mission tests stay locked)
+        run: python -m pytest -q
+      - name: Ruff critical lint
+        run: python -m ruff check app scripts tests
+      - name: Docker build
+        run: docker build --tag hoteldb-ci:${{ github.sha }} .

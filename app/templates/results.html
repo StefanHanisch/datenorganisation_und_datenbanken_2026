@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Hotels in {{city}}{% endblock %}
+{% block content %}
+<section class="container content-section">
+  <div class="breadcrumb"><a href="/">Startseite</a> / Hotelsuche</div>
+  <div class="section-top"><div><div class="eyebrow">ERGEBNISSE</div><h1>Hotels in {{ city }}</h1><p>{{ checkin }} bis {{ checkout }}</p></div><span class="count-pill">{{ results|length }} Treffer (max. 24)</span></div>
+  <div class="results-list">
+    {% for h in results %}
+    <article class="hotel-result"><div class="hotel-result-art"><span>G</span></div>
+      <div class="hotel-result-main"><span class="eyebrow">{{ h.city }} · {{ h.country }}</span>
+        <h2>{{ h.name }}</h2><div class="starline">{% for n in range(h.stars) %}★{% endfor %}</div><p>{{ h.address }}</p></div>
+      <div class="hotel-result-price"><span>Ab</span><strong>{{ '%.2f'|format(h.from_price) }} €</strong><small>pro Nacht</small>
+        <a class="button primary" href="/hotels/{{ h.id }}?checkin={{ checkin }}&checkout={{ checkout }}">Zimmer ansehen →</a></div>
+    </article>
+    {% else %}<div class="empty-state">Keine Hotels gefunden. Versuche Berlin, London oder Paris.</div>{% endfor %}
+  </div>
+</section>
+{% endblock %}

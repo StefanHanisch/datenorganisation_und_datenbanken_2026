@@ -1,0 +1,1 @@
+"""HotelDB teaching application."""

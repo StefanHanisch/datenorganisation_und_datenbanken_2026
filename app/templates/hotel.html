@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}{{ hotel.name }}{% endblock %}
+{% block content %}
+<section class="container content-section">
+  <div class="breadcrumb"><a href="/">Startseite</a> / <a href="/search?city={{hotel.city}}&checkin={{checkin}}&checkout={{checkout}}">Hotelsuche</a> / {{hotel.name}}</div>
+  <div class="detail-banner"><div class="eyebrow light">GLOBALSTAY COLLECTION</div><h1>{{ hotel.name }}</h1><p>{{ hotel.city }}, {{hotel.country}} · {{hotel.address}}</p><span class="white-stars">{% for n in range(hotel.stars) %}★{% endfor %}</span></div>
+  <div class="section-top"><div><div class="eyebrow">DEIN AUFENTHALT</div><h2>Zimmerkategorie wählen</h2><p>{{ checkin }} → {{ checkout }}</p></div></div>
+  <div class="category-grid">
+  {% for c in categories %}
+    <article class="category-card"><div class="category-art"></div><div class="category-content">
+      <div class="category-header"><h3>{{c.name}}</h3><strong>{{ '%.2f'|format(c.base_price) }} € <small>/ Nacht</small></strong></div>
+      <p>Für bis zu {{c.max_guests}} Personen · {{c.capacity}} Zimmer im Hotel</p>
+      {% if c.available %}
+      <span class="available">● Verfügbar</span>
+      <form action="/book" method="post" class="booking-form">
+        <input type="hidden" name="category_id" value="{{c.id}}"><input type="hidden" name="checkin" value="{{checkin}}"><input type="hidden" name="checkout" value="{{checkout}}">
+        <div class="form-row"><label>Vorname<input name="first_name" required maxlength="100" placeholder="Max"></label><label>Nachname<input name="last_name" required maxlength="100" placeholder="Mustermann"></label></div>
+        <label>E-Mail-Adresse<input name="email" type="email" required maxlength="200" placeholder="max@example.test"></label>
+        <button class="button primary" type="submit">Kategorie buchen →</button>
+      </form>
+      {% else %}<span class="unavailable">Aktuell ausgebucht</span>{% endif %}
+    </div></article>
+  {% endfor %}
+  </div>
+</section>
+{% endblock %}
