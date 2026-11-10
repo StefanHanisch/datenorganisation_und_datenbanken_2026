@@ -2,8 +2,7 @@
 CREATE TABLE IF NOT EXISTS cities (
   id BIGSERIAL PRIMARY KEY,
   name TEXT NOT NULL,
-  country TEXT NOT NULL,
-  UNIQUE (name, country)
+  country TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS hotels (
   id BIGSERIAL PRIMARY KEY,
