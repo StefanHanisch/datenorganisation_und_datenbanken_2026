@@ -28,8 +28,16 @@
     },
     {
       "label": "HotelDB: Demo-Daten laden",
+      "detail": "20 Hotels, 400 Zimmer, 2.000 Gäste, 4.000 Reservierungen. ERSETZT vorhandene Daten (--reset).",
       "type": "shell",
-      "command": "python scripts/seed.py --profile demo",
+      "command": "python scripts/seed.py --profile demo --reset --i-understand-data-loss",
+      "problemMatcher": []
+    },
+    {
+      "label": "HotelDB: Große Daten laden (1 Mio Zimmer)",
+      "detail": "1.000 Hotels, 1 Mio Zimmer, 1 Mio Gäste, 3 Mio Reservierungen. ERSETZT vorhandene Daten (--reset).",
+      "type": "shell",
+      "command": "python scripts/seed.py --profile large --reset --i-understand-data-loss",
       "problemMatcher": []
     },
     {

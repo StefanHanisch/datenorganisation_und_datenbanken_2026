@@ -55,6 +55,7 @@ Benutze es nur, wenn du die Demo-Daten wirklich verwerfen willst.
 | Profil | Hotels | Zimmer | Gäste | Reservierungen |
 |---|---:|---:|---:|---:|
 | `demo` (schnell) | 20 | 400 | 2.000 | 4.000 |
+| `large` (1 Mio Zimmer, VS-Code-Task "Große Daten laden") | 1.000 | 1.000.000 | 1.000.000 | 3.000.000 |
 | `lecture` (groß) | 5.000 | 1.000.000 | 3.000.000 | 5.000.000 |
 
 **Lecture-Profil:** Vorher den `demo`-Seed bewusst löschen:

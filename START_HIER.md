@@ -29,6 +29,9 @@ beim Einrichten lösen lassen.**
 
 ## Vor der Vorlesung
 
+- Vorlesungsablauf klein → groß: erst `demo` messen, dann den VS-Code-Task
+  „HotelDB: Große Daten laden (1 Mio Zimmer)“ (`--profile large`, ersetzt die
+  Demo-Daten) ausführen und erneut messen.
 - Auf großem Datensatz testen: `python scripts/seed.py --profile lecture --reset
   --i-understand-data-loss` (Dauer/Storage vorher beachten).
 - Kundenkarten unter `docs/CUSTOMER_CARDS_PRINT.md` ausdrucken.

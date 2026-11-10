@@ -1,5 +1,8 @@
 services:
   web:
+    build:
+      # "dev" stage has no app code -> code changes never rebuild the Dev Container image
+      target: dev
     user: root
     volumes:
       # Relative paths resolve against the first compose file (../compose.yaml), i.e. the project root

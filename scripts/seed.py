@@ -24,6 +24,8 @@ class Profile:
 
 PROFILES = {
     'demo': Profile(20, 12, 6, 2, 2_000, 4_000),
+    # 1,000 hotels x 1,000 rooms = 1,000,000 rooms
+    'large': Profile(1_000, 600, 300, 100, 1_000_000, 3_000_000),
     'lecture': Profile(5_000, 120, 60, 20, 3_000_000, 5_000_000),
 }
 CITIES = [
@@ -72,10 +74,10 @@ def main():
             cur.execute('''
                 WITH city_ids AS (SELECT array_agg(id ORDER BY id) AS ids FROM cities)
                 INSERT INTO hotels(city_id,name,address,stars)
-                SELECT ids[1 + ((g-1) % array_length(ids,1))],
+                SELECT ids[1 + ((g-1) %% array_length(ids,1))],
                        'GlobalStay Hotel ' || lpad(g::text,5,'0'),
-                       'Hotelstraße ' || g::text, (3+(g%3))::smallint
-                FROM generate_series(1,%s) AS g, city_ids
+                       'Hotelstraße ' || g::text, (3+(g%%3))::smallint
+                FROM generate_series(1,%s::bigint) AS g, city_ids
             ''', (p.hotels,))
             cur.execute('''
                 INSERT INTO room_categories(hotel_id,name,base_price,max_guests)
@@ -102,9 +104,9 @@ def main():
             end = min(start + args.batch - 1, p.guests)
             conn.execute('''
                 INSERT INTO guests(first_name,last_name,email)
-                SELECT (ARRAY['Anna','Max','Mia','Jonas','Lina','Alex'])[1 + (g % 6)],
+                SELECT (ARRAY['Anna','Max','Mia','Jonas','Lina','Alex'])[1 + (g %% 6)],
                        'Gast' || g::text, 'gast' || g::text || '@example.test'
-                FROM generate_series(%s,%s) AS g
+                FROM generate_series(%s::bigint,%s::bigint) AS g
             ''', (start, end))
             conn.commit()
             if end == p.guests or end % (args.batch * 5) == 0:
@@ -114,12 +116,12 @@ def main():
             end = min(start + args.batch - 1, p.reservations)
             conn.execute('''
                 INSERT INTO reservations(guest_id,category_id,checkin,checkout,status)
-                SELECT 1 + ((g-1) % %s),
-                       1 + (((g-1)*37) % %s),
-                       date '2026-11-01' + ((g*7) % 520),
-                       date '2026-11-01' + ((g*7) % 520) + (1 + (g % 4)),
+                SELECT 1 + ((g-1) %% %s),
+                       1 + (((g-1)*37) %% %s),
+                       date '2026-11-01' + ((g*7) %% 520)::int,
+                       date '2026-11-01' + ((g*7) %% 520)::int + (1 + (g %% 4))::int,
                        'confirmed'
-                FROM generate_series(%s,%s) AS g
+                FROM generate_series(%s::bigint,%s::bigint) AS g
             ''', (p.guests, categories, start, end))
             conn.commit()
             if end == p.reservations or end % (args.batch * 5) == 0:

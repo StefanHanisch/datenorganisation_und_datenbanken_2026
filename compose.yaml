@@ -25,6 +25,7 @@ services:
     environment:
       DATABASE_URL: postgresql://hotel_app:${HOTEL_APP_PASSWORD:-app_local_change}@db:5432/hoteldb
       STUDENT_DATABASE_URL: postgresql://hotel_student:${HOTEL_STUDENT_PASSWORD:-student_local_change}@db:5432/hoteldb
+      SEED_DATABASE_URL: postgresql://hotel_owner:${POSTGRES_OWNER_PASSWORD:-owner_local_change}@db:5432/hoteldb
     depends_on:
       db:
         condition: service_healthy
