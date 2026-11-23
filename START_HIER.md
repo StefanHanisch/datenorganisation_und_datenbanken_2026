@@ -39,6 +39,25 @@ beim Einrichten lösen lassen.**
 - `docs/SECURITY.md` kontrollieren, insbesondere DB-Rollen.
 - Azure: `docs/AZURE.md`. GH Actions deploy erst nach manueller Freigabe.
 
+## Pattern-Seed für die Datenanalyse
+
+Das Schema wurde erweitert, die Skripte in `db/init/` laufen aber nur auf einem
+leeren Docker-Volume. Eine bestehende Datenbank muss daher einmal neu angelegt
+werden (**`docker compose down -v` löscht alle Daten**, auch für `large` und
+`lecture` nötig):
+
+```powershell
+docker compose down -v
+docker compose up --build -d
+python -m pip install -e ".[analytics]"
+python scripts/seed.py --profile patterns
+python scripts/export_analytics.py
+python scripts/verify_patterns.py
+```
+
+Danach `notebooks/hotel_analytics.ipynb` öffnen. Profile und Größen (`large`
+jetzt 1.010 Hotels, `lecture` 5.010 Hotels) stehen in der `README.md`.
+
 ## Missionsfreigaben
 
 | Freigabe | Darf live geändert werden? |

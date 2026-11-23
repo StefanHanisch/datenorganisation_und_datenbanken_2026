@@ -11,3 +11,7 @@ __pycache__/
 *.sqlite*
 *.log
 coverage.xml
+private/
+data/
+
+.claude/worktrees/

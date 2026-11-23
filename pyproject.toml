@@ -16,7 +16,17 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8,<10", "httpx>=0.27,<1", "ruff>=0.9,<1", "faker>=30,<40"]
+dev = ["pytest>=8,<10", "httpx>=0.27,<1", "ruff>=0.9,<1", "faker>=30,<40", "numpy>=2,<3"]
+analytics = [
+  "numpy>=2,<3",
+  "pandas>=2.2,<4",
+  "pyarrow>=17,<30",
+  "matplotlib>=3.9,<4",
+  "sqlalchemy>=2.0,<3",
+  "psycopg[binary]>=3.2,<4",
+  "python-dotenv>=1.0,<2",
+  "ipykernel>=6.29,<8",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

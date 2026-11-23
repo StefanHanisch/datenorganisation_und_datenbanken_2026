@@ -55,8 +55,12 @@ Benutze es nur, wenn du die Demo-Daten wirklich verwerfen willst.
 | Profil | Hotels | Zimmer | Gäste | Reservierungen |
 |---|---:|---:|---:|---:|
 | `demo` (schnell) | 20 | 400 | 2.000 | 4.000 |
-| `large` (1 Mio Zimmer, VS-Code-Task "Große Daten laden") | 1.000 | 1.000.000 | 1.000.000 | 3.000.000 |
-| `lecture` (groß) | 5.000 | 1.000.000 | 3.000.000 | 5.000.000 |
+| `patterns` (klein, für die Datenanalyse) | 40 | 1.140 | 60.000 | 240.000 |
+| `large` (1 Mio Zimmer, VS-Code-Task "Große Daten laden") | 1.010 | 1.000.540 | 1.000.000 | 3.000.000 |
+| `lecture` (groß) | 5.010 | 1.000.540 | 3.000.000 | 5.000.000 |
+
+In `patterns`, `large` und `lecture` sind zusätzliche Kernhotels mit je 54
+Zimmern enthalten (10, 100 bzw. 170). Die Zahlen sind Richtwerte.
 
 **Lecture-Profil:** Vorher den `demo`-Seed bewusst löschen:
 
@@ -78,6 +82,28 @@ python scripts/benchmark_email.py --email gast2500000@example.test
 
 Das SQL-Labor bietet ebenfalls `EXPLAIN ANALYZE`. Messe mit derselben Query und
 unterscheide DB-Ausführungszeit von Browser-/Netzwerklatenz.
+
+## Pattern-Seed und Datenanalyse
+
+Das Schema enthält zusätzliche Spalten und die Tabellen `daily_rates` und
+`calendar_events`. Die Skripte in `db/init/` laufen nur auf einem **leeren
+Docker-Volume**, und `--reset` leert nur die Tabellen. Eine bestehende
+Datenbank muss deshalb einmal neu angelegt werden. **Achtung:**
+`docker compose down -v` löscht alle Daten.
+
+```sh
+docker compose down -v
+docker compose up --build -d
+python -m pip install -e ".[analytics]"
+python scripts/seed.py --profile patterns
+python scripts/export_analytics.py
+python scripts/verify_patterns.py
+```
+
+`export_analytics.py` schreibt Parquet-Dateien nach `data/export/`,
+`verify_patterns.py` prüft sie auf Plausibilität und meldet `PASS` oder `FAIL`.
+Danach `notebooks/hotel_analytics.ipynb` öffnen. Die Schritte funktionieren
+genauso mit `--profile large` oder `--profile lecture`.
 
 ## In der Vorlesung
 

@@ -1,10 +1,15 @@
--- MISSION-01: PERFORMANCE (DO NOT RUN UNTIL THE STUDENTS CHOOSE AN INDEX)
--- TODO(MISSION-01): The agent should write ONE appropriate CREATE INDEX statement.
--- Requirements:
---   * Index the guests.email equality lookup, not unrelated columns.
---   * Confirm index did not already exist.
---   * Use CONCURRENTLY if the database remains in active use.
---   * Do NOT wrap CREATE INDEX CONCURRENTLY in BEGIN/COMMIT.
---   * Obtain explicit teacher approval before executing against Azure.
---   * Re-run EXPLAIN (ANALYZE, BUFFERS) and compare actual results.
--- No SQL statement here by design. This mission is intentionally locked.
+-- MISSION-01: PERFORMANCE
+-- Decision (class + teacher): B-tree index on guests.email for the equality lookup
+-- `WHERE email = ...` used by /bookings.
+-- Measured before the index: Parallel Seq Scan, ~1,000,020 rows read, ~13,400 buffers, ~51-60 ms (local Docker).
+--
+-- Run as hotel_owner. Do NOT wrap in BEGIN/COMMIT: CREATE INDEX CONCURRENTLY
+-- cannot run inside a transaction block. Run it as a single statement.
+-- Execute only after separate explicit teacher approval (never automatically against Azure).
+--
+-- Check first that no such index exists:
+--   SELECT indexname FROM pg_indexes WHERE tablename = 'guests';
+--
+-- Afterwards re-run EXPLAIN (ANALYZE, BUFFERS) (scripts/benchmark_email.py) and compare.
+
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_guests_email ON guests (email);

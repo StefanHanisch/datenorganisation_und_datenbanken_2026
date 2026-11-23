@@ -12,8 +12,7 @@
 			"installOhMyZsh": true,
 			"upgradePackages": false
 		},
-		"ghcr.io/devcontainers/features/git:1": {},
-		"ghcr.io/devcontainers/features/azure-cli:1": {}
+		"ghcr.io/devcontainers/features/git:1": {}
 	},
 	"forwardPorts": [8000],
 	"postCreateCommand": "pip install --no-deps -e .",
