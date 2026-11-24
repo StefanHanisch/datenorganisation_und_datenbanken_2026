@@ -221,6 +221,15 @@ Die Azure-App wird **nicht** beim lokalen Start provisioniert. Anleitung:
 Kosten und der große Seed benötigt genügend Zeit und Speicher. Budget-Warnungen
 stoppen keine Dienste automatisch. Nach der Veranstaltung Ressourcen entfernen.
 
+**Demo als Container App** (lokal bauen, Registry + Container App in eigener Resource Group,
+bewusst ungeschützt, nur mit Freigabe der Lehrperson):
+
+```sh
+DRY_RUN=1 scripts/deploy_azure_app.sh up   # nur anzeigen
+scripts/deploy_azure_app.sh up             # bauen, pushen, starten, /health prüfen
+scripts/deploy_azure_app.sh down           # danach alles wieder löschen (DB bleibt)
+```
+
 ## Sicherheitsgrenzen
 
 Nur Unterricht mit synthetischen Daten! Dies ist eine einfach geschützte
