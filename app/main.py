@@ -11,39 +11,35 @@ from pydantic import BaseModel, Field
 from starlette.middleware.sessions import SessionMiddleware
 from psycopg.errors import UniqueViolation, ForeignKeyViolation
 
+from app.access import require_access, role_of
 from app.config import get_settings
 from app.db import db_connection
 from app.services import category_has_capacity, create_reservation, valid_stay
 from app.mission02_autocomplete import suggest_cities
 from app.mission03_change import change_reservation
+from app.resources_api import CategoryCreate, CityCreate, HotelCreate, RoomCreate
+from app.resources_api import router as resources_router
 from app.sql_lab import SqlRejected, run_student_query
 
 BASE = Path(__file__).resolve().parent
 settings = get_settings()
-app = FastAPI(title='GlobalStay / HotelDB', redoc_url=None)
+API_DESCRIPTION = (
+    'Ressourcen-API unter `/api/v1` (Städte, Hotels, Zimmerkategorien, Zimmer). '
+    'Erst unter [/login](/login) anmelden: Swagger nutzt das Session-Cookie. '
+    'Lesen: jede Session. Schreiben: nur Lehrperson. '
+    'Listen sind immer begrenzt (`limit`, max. 500) und werden mit `after_id` = `next_after_id` weitergeblättert.'
+)
+app = FastAPI(title='GlobalStay / HotelDB', description=API_DESCRIPTION, redoc_url=None)
 app.add_middleware(SessionMiddleware, secret_key=settings.session_secret or 'LOCAL-UNCONFIGURED-DO-NOT-PUBLISH',
                    same_site='lax', https_only=settings.cookie_secure, max_age=60 * 60 * 4)
 app.mount('/static', StaticFiles(directory=BASE / 'static'), name='static')
 templates = Jinja2Templates(directory=BASE / 'templates')
+app.include_router(resources_router)
 
 
 @app.on_event('startup')
 def verify_config():
     settings.check_runtime()
-
-
-def role_of(request: Request) -> str | None:
-    role = request.session.get('role')
-    return role if role in ('student', 'teacher') else None
-
-
-def require_access(request: Request, teacher: bool = False) -> str:
-    role = role_of(request)
-    if role is None:
-        raise HTTPException(status_code=401, detail='Bitte zuerst anmelden.')
-    if teacher and role != 'teacher':
-        raise HTTPException(status_code=403, detail='Nur für die Lehrperson freigegeben.')
-    return role
 
 
 def page_context(request: Request, **kwargs):
@@ -257,30 +253,6 @@ def sql_workbench(request: Request, payload: QueryRequest):
         return run_student_query(payload.sql, explain=payload.explain)
     except SqlRejected as exc:
         raise HTTPException(400, str(exc)) from exc
-
-
-class CityCreate(BaseModel):
-    name: str = Field(min_length=2, max_length=80)
-    country: str = Field(min_length=2, max_length=80)
-
-
-class HotelCreate(BaseModel):
-    city_id: int = Field(gt=0)
-    name: str = Field(min_length=2, max_length=140)
-    address: str = Field(min_length=2, max_length=200)
-    stars: int = Field(default=3, ge=1, le=5)
-
-
-class CategoryCreate(BaseModel):
-    hotel_id: int = Field(gt=0)
-    name: str = Field(min_length=2, max_length=60)
-    base_price: float = Field(gt=0, le=10000)
-    max_guests: int = Field(default=2, ge=1, le=8)
-
-
-class RoomCreate(BaseModel):
-    category_id: int = Field(gt=0)
-    room_number: str = Field(min_length=1, max_length=40)
 
 
 def write_record(request: Request, statement: str, values: tuple):
