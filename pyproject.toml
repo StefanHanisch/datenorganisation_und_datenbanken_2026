@@ -25,6 +25,7 @@ analytics = [
   "matplotlib>=3.9,<4",
   "sqlalchemy>=2.0,<3",
   "psycopg[binary]>=3.2,<4",
+  "psycopg2-binary>=2.9,<3",  # wie in Google Colab (Notebook nutzt psycopg2)
   "python-dotenv>=1.0,<2",
   "ipykernel>=6.29,<8",
 ]

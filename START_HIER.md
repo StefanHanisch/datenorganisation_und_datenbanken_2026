@@ -53,12 +53,30 @@ docker compose down -v
 docker compose up --build -d
 python -m pip install -e ".[analytics]"
 python scripts/seed.py --profile patterns
-python scripts/export_analytics.py
-python scripts/verify_patterns.py
+python scripts/setup_analytics.py           # nur Vorschau
+python scripts/setup_analytics.py --apply   # Schema analytics + Rolle hotel_analyst
 ```
 
-Danach `notebooks/hotel_analytics.ipynb` öffnen. Profile und Größen (`large`
-jetzt 1.010 Hotels, `lecture` 5.010 Hotels) stehen in der `README.md`.
+Für Azure `DB_TARGET=azure` setzen, `--apply` nur mit Freigabe der Lehrperson.
+Nach späteren Seeds: `python scripts/setup_analytics.py --refresh` (`seed.py`
+macht das automatisch, sobald das Schema `analytics` existiert).
+`export_analytics.py` bleibt als optionaler Parquet-Export, das Notebook braucht
+ihn nicht mehr. Profile und Größen (`large` jetzt 1.010 Hotels, `lecture` 5.010
+Hotels) stehen in der `README.md`.
+
+## Notebook für Studierende
+
+`notebooks/hotel_analytics.ipynb` braucht nur `AZURE_ANALYST_DATABASE_URL`
+(read-only, Schema `analytics`, 60 s Timeout):
+
+- **Google Colab:** über den Badge im Notebook öffnen, dann `.env` hochladen,
+  Colab-Secret `AZURE_ANALYST_DATABASE_URL` anlegen oder die URL beim Start eingeben.
+- **Lokal:** `python -m pip install -e ".[analytics]"`, `.env` mit
+  `AZURE_ANALYST_DATABASE_URL`, Notebook in VS Code öffnen.
+
+Lösung: `notebooks/hotel_analytics_loesung.ipynb`. Beide Notebooks entstehen mit
+`python scripts/build_notebooks.py` aus `notebooks/src/` (**nie die `.ipynb`
+direkt bearbeiten**).
 
 ## Missionsfreigaben
 

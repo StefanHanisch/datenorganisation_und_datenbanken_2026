@@ -13,6 +13,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 import psycopg
+from psycopg import sql
 from dotenv import load_dotenv
 from faker import Faker
 
@@ -267,6 +268,21 @@ def progress(msg):
     print(f'[{time.strftime("%H:%M:%S")}] {msg}', flush=True)
 
 
+def refresh_analytics(conn):
+    """Refresh the analytics materialized views, if the schema exists (scripts/setup_analytics.py)."""
+    if conn.execute("SELECT 1 FROM pg_namespace WHERE nspname = 'analytics'").fetchone() is None:
+        return
+    # Creation order (oid), so views that read other views are refreshed after them
+    views = [row[0] for row in conn.execute(
+        "SELECT matviewname FROM pg_matviews WHERE schemaname = 'analytics' "
+        "ORDER BY format('%I.%I', schemaname, matviewname)::regclass::oid")]
+    progress(f'Refreshing {len(views)} materialized views in schema analytics')
+    for view in views:
+        conn.execute(sql.SQL('REFRESH MATERIALIZED VIEW {}.{}').format(
+            sql.Identifier('analytics'), sql.Identifier(view)))
+    conn.commit()
+
+
 def main():
     load_dotenv()
     parser = argparse.ArgumentParser(description=__doc__)
@@ -420,6 +436,7 @@ def main():
                       'daily_rates', 'calendar_events'):
             conn.execute('ANALYZE ' + table)
         conn.commit()
+        refresh_analytics(conn)
         progress('DONE. Sample lookup: gast1@example.test')
         progress('MISSION-01: guests.email has intentionally NO INDEX.')
 

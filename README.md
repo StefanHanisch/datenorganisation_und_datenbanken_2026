@@ -104,14 +104,38 @@ docker compose down -v
 docker compose up --build -d
 python -m pip install -e ".[analytics]"
 python scripts/seed.py --profile patterns
-python scripts/export_analytics.py
-python scripts/verify_patterns.py
+python scripts/setup_analytics.py           # nur Vorschau
+python scripts/setup_analytics.py --apply   # Schema analytics + Rolle hotel_analyst anlegen
 ```
 
-`export_analytics.py` schreibt Parquet-Dateien nach `data/export/`,
-`verify_patterns.py` prüft sie auf Plausibilität und meldet `PASS` oder `FAIL`.
-Danach `notebooks/hotel_analytics.ipynb` öffnen. Die Schritte funktionieren
+`setup_analytics.py` legt das Schema `analytics` mit Materialized Views der 10
+Kern-Hotels an; die Rolle `hotel_analyst` liest nur dieses Schema (60 s Timeout).
+Ohne Flag zeigt das Skript nur eine Vorschau. Das Ziel kommt wie üblich aus
+`DB_TARGET`; für Azure `DB_TARGET=azure` setzen und `--apply` nur mit Freigabe
+der Lehrperson ausführen. Nach späteren Seeds aktualisiert
+`python scripts/setup_analytics.py --refresh` die Views. `seed.py` erledigt das
+am Ende automatisch, sobald das Schema existiert. Die Schritte funktionieren
 genauso mit `--profile large` oder `--profile lecture`.
+
+Optional: `export_analytics.py` schreibt Parquet-Dateien nach `data/export/`,
+`verify_patterns.py` prüft sie auf Plausibilität und meldet `PASS` oder `FAIL`.
+Für das Notebook ist der Export nicht mehr nötig.
+
+## Notebook für Studierende
+
+`notebooks/hotel_analytics.ipynb` liest die Daten direkt aus dem Schema
+`analytics` über die Variable `AZURE_ANALYST_DATABASE_URL` (Reihenfolge:
+Umgebungsvariable, `.env`-Datei, Colab-Secret, Eingabe beim Start). Zwei Wege:
+
+- **Google Colab:** Badge oben im Notebook anklicken. Dann entweder eine `.env`
+  hochladen, ein Colab-Secret `AZURE_ANALYST_DATABASE_URL` anlegen oder die URL
+  beim Start eingeben.
+- **Lokal:** `python -m pip install -e ".[analytics]"`, in `.env` die Zeile
+  `AZURE_ANALYST_DATABASE_URL=...` eintragen, Notebook in VS Code öffnen.
+
+Die Lösung liegt in `notebooks/hotel_analytics_loesung.ipynb`. Beide Notebooks
+erzeugt `python scripts/build_notebooks.py` aus `notebooks/src/`. **Nie die
+`.ipynb` direkt bearbeiten**, immer die Quellen ändern und neu bauen.
 
 ## In der Vorlesung
 
