@@ -16,6 +16,7 @@ import psycopg
 from dotenv import load_dotenv
 from faker import Faker
 
+from app.db_target import describe_target, resolve_db_url
 from seed_calendar import calendar_rows
 from seed_holidays import STATE_SLOTS
 from seed_model import CORE_CAPACITY, CORE_CITIES, CoreCategory
@@ -278,9 +279,13 @@ def main():
         parser.error('--reset needs --i-understand-data-loss')
     if args.batch < 1_000 or args.batch > 500_000:
         parser.error('--batch must be between 1,000 and 500,000')
-    url = os.getenv('SEED_DATABASE_URL')
+    try:
+        url = resolve_db_url(os.environ, 'SEED_DATABASE_URL')
+    except RuntimeError as error:
+        parser.error(str(error))
     if not url:
         parser.error('SEED_DATABASE_URL missing (set it from .env)')
+    progress(f"target={os.environ.get('DB_TARGET') or 'default'} -> {describe_target(url)}")
     p = PROFILES[args.profile]
     if p.hotels < p.cities:
         parser.error('profile needs hotels >= cities so every city has a hotel')

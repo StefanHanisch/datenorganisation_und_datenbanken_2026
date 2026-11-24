@@ -8,6 +8,8 @@ beim Einrichten lösen lassen.**
 1. Ordner `HotelDB` in VS Code öffnen.
 2. `.env.example` zu `.env` kopieren, beide Zugangscodes und `SESSION_SECRET`
    austauschen. Database-URLs/Passwörter müssen zusammenpassen.
+   Mit `DB_TARGET=local` oder `DB_TARGET=azure` (oben in `.env`) wählst du, ob
+   App und Skripte die lokale Docker-DB oder die Azure-DB nutzen.
 3. `docker compose up --build -d` (Docker Desktop läuft).
 4. In der VS-Code-Python-Umgebung:
 

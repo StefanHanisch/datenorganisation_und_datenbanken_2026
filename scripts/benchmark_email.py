@@ -5,6 +5,7 @@ import json
 import os
 import psycopg
 from dotenv import load_dotenv
+from app.db_target import resolve_db_url
 
 
 def main():
@@ -12,7 +13,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--email', default='gast1@example.test')
     args = parser.parse_args()
-    url = os.getenv('STUDENT_DATABASE_URL')
+    try:
+        url = resolve_db_url(os.environ, 'STUDENT_DATABASE_URL')
+    except RuntimeError as error:
+        parser.error(str(error))
     if not url:
         parser.error('STUDENT_DATABASE_URL not set')
     with psycopg.connect(url) as conn:

@@ -20,6 +20,14 @@ optional Claude Code Extension/CLI. Docker Desktop muss laufen.
    der DB-Passwörter bitte **sowohl** die drei `*_PASSWORD` als auch die URLs
    in `.env` aktualisieren; sie müssen übereinstimmen. Aufwändigere Geheimnisse
    werden nie in Git eingecheckt.
+   Die Zeile `DB_TARGET=local|azure` ganz oben in `.env` wählt die Ziel-Datenbank:
+   `local` nutzt die `LOCAL_*`-URLs (Docker), `azure` die `AZURE_*`-URLs (dort
+   zuerst die Platzhalter `<...>` ersetzen). App, `seed.py`, `export_analytics.py`,
+   `benchmark_email.py` und das Analytics-Notebook folgen dieser Variable;
+   `seed.py` und `export_analytics.py` melden das Ziel beim Start (`target=...`).
+   Neue Azure-DB einrichten (Rollen, `hoteldb`, Schema, Rechte):
+   `python scripts/setup_azure_db.py` zeigt nur eine Vorschau,
+   `python scripts/setup_azure_db.py --apply` führt sie aus (nur mit Freigabe der Lehrperson).
 3. Terminal im Projektordner:
 
    ```sh

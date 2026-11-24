@@ -23,9 +23,12 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://hotel_app:${HOTEL_APP_PASSWORD:-app_local_change}@db:5432/hoteldb
-      STUDENT_DATABASE_URL: postgresql://hotel_student:${HOTEL_STUDENT_PASSWORD:-student_local_change}@db:5432/hoteldb
-      SEED_DATABASE_URL: postgresql://hotel_owner:${POSTGRES_OWNER_PASSWORD:-owner_local_change}@db:5432/hoteldb
+      # Inside the container the local DB is the service "db" (not localhost:5433).
+      # The AZURE_* URLs come unchanged from .env; DB_TARGET picks the set (app/db_target.py).
+      DB_TARGET: ${DB_TARGET:-local}
+      LOCAL_DATABASE_URL: postgresql://hotel_app:${HOTEL_APP_PASSWORD:-app_local_change}@db:5432/hoteldb
+      LOCAL_STUDENT_DATABASE_URL: postgresql://hotel_student:${HOTEL_STUDENT_PASSWORD:-student_local_change}@db:5432/hoteldb
+      LOCAL_SEED_DATABASE_URL: postgresql://hotel_owner:${POSTGRES_OWNER_PASSWORD:-owner_local_change}@db:5432/hoteldb
     depends_on:
       db:
         condition: service_healthy

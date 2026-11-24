@@ -17,6 +17,8 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 from dotenv import load_dotenv
 
+from app.db_target import describe_target, resolve_db_url
+
 CHUNK_ROWS = 50_000
 
 # PostgreSQL TIMESTAMPTZ values are stored as UTC instants in the Parquet files.
@@ -222,9 +224,13 @@ def main():
     parser.add_argument("--out", default="data/export", help="Zielordner der Parquet-Dateien")
     args = parser.parse_args()
 
-    url = os.getenv("SEED_DATABASE_URL")
+    try:
+        url = resolve_db_url(os.environ, "SEED_DATABASE_URL")
+    except RuntimeError as error:
+        parser.error(str(error))
     if not url:
         parser.error("SEED_DATABASE_URL fehlt (aus .env setzen)")
+    print(f"Ziel: {os.environ.get('DB_TARGET') or 'default'} -> {describe_target(url)}", flush=True)
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)

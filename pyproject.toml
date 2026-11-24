@@ -16,7 +16,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8,<10", "httpx>=0.27,<1", "ruff>=0.9,<1", "faker>=30,<40", "numpy>=2,<3"]
+dev = ["pytest>=8,<10", "httpx>=0.27,<1", "ruff>=0.9,<1", "faker>=30,<40", "numpy>=2,<3",
+       "psycopg2-binary>=2.9,<3"]  # psycopg2: used by connect_do_db.ipynb
 analytics = [
   "numpy>=2,<3",
   "pandas>=2.2,<4",

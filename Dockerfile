@@ -13,6 +13,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     && pip install -r /tmp/requirements.txt
 
 FROM deps AS dev
+# psql to talk to the local and the Azure PostgreSQL from the Dev Container terminal
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 RUN --mount=type=cache,target=/root/.cache/pip \
     python -c "import tomllib; p=tomllib.load(open('pyproject.toml','rb'))['project']; print('\n'.join(p['optional-dependencies']['dev']))" > /tmp/requirements-dev.txt \
     && pip install -r /tmp/requirements-dev.txt
