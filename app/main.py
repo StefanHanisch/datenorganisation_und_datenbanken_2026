@@ -20,7 +20,7 @@ from app.sql_lab import SqlRejected, run_student_query
 
 BASE = Path(__file__).resolve().parent
 settings = get_settings()
-app = FastAPI(title='GlobalStay / HotelDB', docs_url=None, redoc_url=None)
+app = FastAPI(title='GlobalStay / HotelDB', redoc_url=None)
 app.add_middleware(SessionMiddleware, secret_key=settings.session_secret or 'LOCAL-UNCONFIGURED-DO-NOT-PUBLISH',
                    same_site='lax', https_only=settings.cookie_secure, max_age=60 * 60 * 4)
 app.mount('/static', StaticFiles(directory=BASE / 'static'), name='static')
